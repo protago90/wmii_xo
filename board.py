@@ -1,46 +1,59 @@
+import math
+
+
 class TheBoard():
     def __init__(self):
         self.board = [0 for _ in range(9)]
-        self.map = {1: 'X', -1: 'O', 0: ' '}
-        self.map_inv = {v: k for k, v in self.map.items()}
+        self.map_val_to_sign = {1: 'X', -1: 'O', 0: ' '}
+        self.map_sign_to_val = {v: k for k, v in self.map_val_to_sign.items()}
         self.winner = None
-        self.msg = '{:>10} | {} | {}'
+        self.msg = "{:>10} | {} | {}"
+
+    @staticmethod
+    def _break_vector(vec, desc=False):
+        vecs = [vec[i*3 : i*3+3] for i in range(3)]
+        return vecs[::-1] if desc else vecs
 
     def print_intro(self):
         print('Witaj w Kółko vs Krzyżyk!')
-        for a, b, c in [range(9)[i*3-3 : i*3] for i in range(3, 0, -1)]:
+        for a, b, c in self._break_vector(range(1, 10), desc=True):
             print(self.msg.format(a, b, c))
 
     def print_state(self):
-        for row in [self.board[i*3-3 : i*3] for i in range(3, 0, -1)]:
-            a, b, c = [self.map.get(x) for x in row]
+        for row in self._break_vector(self.board, desc=True):
+            a, b, c = [self.map_val_to_sign.get(v) for v in row]
             print(self.msg.format(a, b, c))
 
-    def process_move(self, sign, pos):
-        val = self.map_inv.get(sign)
-        if self.board[pos] == 0:
-            self.board[pos] = val
-            if self.check_end_state():
-                self.winner = sign
+    @staticmethod
+    def _check_win_line(vec):
+        return abs(sum(vec)) == 3
+
+    def _check_end_state(self, pos):
+        i_row = math.floor(pos/3)
+        the_row = self._break_vector(self.board)[i_row]
+        if self._check_win_line(the_row):
             return True
+        i_col = pos % 3
+        the_col = [self.board[i_col+i] for i in range(0, 9, 3)]
+        if self._check_win_line(the_col):
+            return True
+        diag1 = [0, 4, 8]
+        if pos in diag1:
+            if self._check_win_line(self.board[i] for i in diag1):
+                return True
+        diag2 = [2, 4, 6]
+        if pos in diag2:
+            if self._check_win_line(self.board[i] for i in diag2):
+                return True
         return False
 
-    def check_end_state(self):  
-        #todo: optimize to only affected cross sections
-        for row in (self.board[i*3 : i*3 + 3] for i in range(3)):
-            if abs(sum(row)) == 3:
-                return True
-        for col in ([self.board[i+j] for j in [0, 3, 6]] for i in range(3)):
-            if abs(sum(col)) == 3:
-                return True
-        for diag in ([self.board[i] for i in [0, 4, 8]], 
-                     [self.board[i] for i in [2, 4, 6]]):
-            if abs(sum(diag)) == 3:
-                return True
-        return False
+    def process_move(self, sign, pos):
+        self.board[pos] = self.map_sign_to_val.get(sign)
+        if self._check_end_state(pos):
+            self.winner = sign
 
     def get_valid_moves(self):
         return [i for i, v in enumerate(self.board) if v == 0]
     
-    def check_gameplay(self):
+    def check_open_moves(self):
         return len(self.get_valid_moves()) >= 1

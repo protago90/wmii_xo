@@ -1,27 +1,26 @@
 
-from agent import HumanAgnet, RandomAgnet
+from agent import HumanAgent, RandomAgent
 from board import TheBoard
-import time
 
 
 def gameplay(board, x_agent, o_agent):
-    player = 'X'
     board.print_intro()
-    while board.check_gameplay():
-        if player == 'X':
-            pos = x_agent.make_move(board)
-        else:
-            pos = o_agent.make_move(board)
-        if board.process_move(player, pos):
-            board.print_state()
+    map_sign_to_agent = {'X': x_agent, 'O': o_agent}
+    sign = 'X'
+    sign_next = 'O'
+    while board.check_open_moves():
+        print(f'# Ruch "{sign}"')
+        pos = map_sign_to_agent.get(sign).make_move(board)
+        board.process_move(sign, pos)
+        board.print_state()
         if board.winner:
-            print(f'# Gracz "{player}" wygrywa')
-            return player
-        player = 'O' if player == 'X' else 'X'
+            print(f'# Gracz "{sign}" wygrywa')
+            break
+        sign, sign_next = sign_next, sign
 
 
 if __name__ == '__main__':
     board = TheBoard()
-    x_agent = HumanAgnet('X')
-    o_agent = RandomAgnet('O')
+    x_agent = HumanAgent('X')
+    o_agent = RandomAgent('O')
     gameplay(board, x_agent, o_agent)
