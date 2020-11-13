@@ -1,5 +1,4 @@
-
-from agent import HumanAgent, RandomAgent
+from agent import HumanAgent, RandomAgent, MinMaxAgent
 from board import TheBoard
 
 
@@ -21,6 +20,7 @@ def gameplay(board, x_agent, o_agent):
 
 if __name__ == '__main__':
     board = TheBoard()
-    x_agent = HumanAgent('X')
-    o_agent = RandomAgent('O')
+    x_agent = MinMaxAgent('X') #HumanAgent('X')
+    o_agent = MinMaxAgent('O')
     gameplay(board, x_agent, o_agent)
+    
