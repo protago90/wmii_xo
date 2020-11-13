@@ -1,12 +1,11 @@
 import random
 import time
-from collections import defaultdict
 
 
 class Agent():
     def __init__(self, sign):
         self.sign = sign
-        self.nap = .6
+        self.nap = 0
     
     def make_move(self, board):
         pass
@@ -15,6 +14,7 @@ class Agent():
 class HumanAgent(Agent):
     def __init__(self, sign):
         super().__init__(sign)
+        self.id = 'Human'
 
     def make_move(self, board):
         while True:
@@ -28,6 +28,7 @@ class HumanAgent(Agent):
 class RandomAgent(Agent):
     def __init__(self, sign):
         super().__init__(sign)
+        self.id = 'Random'
     
     def make_move(self, board):
         time.sleep(self.nap)
@@ -37,6 +38,7 @@ class RandomAgent(Agent):
 class MinMaxAgent(Agent):
     def __init__(self, sign):
         super().__init__(sign)
+        self.id = 'Minmax'
 
     def make_move(self, board):
         time.sleep(self.nap)
@@ -70,3 +72,12 @@ class MinMaxAgent(Agent):
             scores.append(self.calc_minimax(not maximizer, sign, board))
             board.undo_move()
         return max(scores) if maximizer else min(scores)
+
+
+class CustomAgent(Agent):
+    def __init__(self, sign):
+        super().__init__(sign)
+        self.id = 'Custom'
+
+    def make_move(self, board):
+        pass
