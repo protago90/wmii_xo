@@ -1,6 +1,6 @@
 import random
 import time
-import math
+from collections import defaultdict
 
 
 class Agent():
@@ -47,14 +47,15 @@ class MinMaxAgent(Agent):
         return pos
     
     def apply_minmax(self, board):
-        the_score = -math.inf
-        the_pos = None
+        record = []
         for pos in board.get_valid_moves():
             board.process_move(self.sign, pos)
             score = self.calc_minimax(False, self.sign, board) #oponent
             board.undo_move()
-            if score > the_score:
-                the_score, the_pos = score, pos
+            record.append((pos, score))
+        the_pos = sorted(
+            record, key=lambda xy: (xy[1], random.random()), reverse=True
+        )[0][0]
         return the_pos
 
     def calc_minimax(self, maximizer, sign, board):
