@@ -5,7 +5,7 @@ import time
 class Agent():
     def __init__(self, sign):
         self.sign = sign
-        self.nap = 0
+        self.nap = 1
     
     def make_move(self, board):
         pass

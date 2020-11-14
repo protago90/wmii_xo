@@ -8,7 +8,7 @@ class TheBoard():
         self.map_sign_to_val = {v: k for k, v in self.map_val_to_sign.items()}
         self.winner = None
         self.moves_registry = []
-        self.msg = "{:>10} | {} | {}"
+        self.msg = "\033[36m{:>10} | {} | {}\033[0m" #\033[1m
 
     @staticmethod
     def _split_vector(vec, desc=False):
