@@ -5,7 +5,6 @@ import time
 class Agent():
     def __init__(self, sign):
         self.sign = sign
-        self.nap = 1
     
     def make_move(self, board):
         pass
@@ -26,9 +25,10 @@ class HumanAgent(Agent):
 
 
 class RandomAgent(Agent):
-    def __init__(self, sign):
+    def __init__(self, sign, nap=0):
         super().__init__(sign)
         self.id = 'Random'
+        self.nap = nap
     
     def make_move(self, board):
         time.sleep(self.nap)
@@ -36,9 +36,10 @@ class RandomAgent(Agent):
 
 
 class MinMaxAgent(Agent):
-    def __init__(self, sign):
+    def __init__(self, sign, nap=0):
         super().__init__(sign)
         self.id = 'Minmax'
+        self.nap = nap
 
     def make_move(self, board):
         time.sleep(self.nap)
@@ -75,9 +76,32 @@ class MinMaxAgent(Agent):
 
 
 class CustomAgent(Agent):
-    def __init__(self, sign):
+    def __init__(self, sign, nap=0):
         super().__init__(sign)
         self.id = 'Custom'
+        self.nap = nap
 
     def make_move(self, board):
-        pass
+        time.sleep(self.nap)
+        sign = 'X' if self.sign == 'O' else 'O'
+        pos = self.apply_rule(board, sign)
+        return pos
+
+    def apply_rule(self, board, sign):
+        moves = board.get_valid_moves()
+        if len(moves) == 9:
+            return 8 #random.choice([0, 2, 6, 8])
+        if len(moves) == 8:
+            return 4 if 4 in moves else random.choice([2, 6])
+        for pos in moves:
+            board.process_move(self.sign, pos)
+            if board.winner:
+                board.undo_move()
+                return pos
+            board.undo_move()
+            board.process_move(sign, pos) #oponent
+            if board.winner:
+                board.undo_move()
+                return pos
+            board.undo_move()
+        return random.choice(moves)

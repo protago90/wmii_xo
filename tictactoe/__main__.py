@@ -5,10 +5,10 @@ from tqdm import tqdm #install
 
 
 class Agent():
-    human = HumanAgent
+    player = HumanAgent
     minmax = MinMaxAgent
     random = RandomAgent
-    #custom = CustomAgent
+    custom = CustomAgent
 
 
 def run_gameplay(board, x_agent, o_agent, show):
@@ -50,7 +50,8 @@ def main_tournament(x_agent, o_agent, n=10, show=False):
 
 
 if __name__ == '__main__':
-    x_agent = Agent.random('X')
-    o_agent = Agent.minmax('O')
-    main(x_agent, o_agent)
-    # main_tournament(x_agent, o_agent, n=1)
+    nap = 1 #!
+    x_agent = Agent.minmax('X', nap)
+    o_agent = Agent.custom('O', nap)
+    # main(x_agent, o_agent)
+    main_tournament(x_agent, o_agent, n=100)
