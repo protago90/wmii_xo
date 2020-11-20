@@ -10,7 +10,7 @@ class Agent():
         pass
 
 
-class HumanAgent(Agent):
+class HumanUI(Agent):
     def __init__(self, sign):
         super().__init__(sign)
         self.id = 'Human'
@@ -24,7 +24,7 @@ class HumanAgent(Agent):
             except ValueError: pass
 
 
-class RandomAgent(Agent):
+class RandomBot(Agent):
     def __init__(self, sign, nap=0):
         super().__init__(sign)
         self.id = 'Random'
@@ -35,7 +35,7 @@ class RandomAgent(Agent):
         return random.choice(board.get_valid_moves())
 
 
-class MinMaxAgent(Agent):
+class MinMaxBot(Agent):
     def __init__(self, sign, nap=0):
         super().__init__(sign)
         self.id = 'Minmax'
@@ -75,7 +75,7 @@ class MinMaxAgent(Agent):
         return max(scores) if maximizer else min(scores)
 
 
-class CustomAgent(Agent):
+class CustomBot(Agent):
     def __init__(self, sign, nap=0):
         super().__init__(sign)
         self.id = 'Custom'

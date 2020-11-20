@@ -1,22 +1,26 @@
-from agent import HumanAgent, RandomAgent, MinMaxAgent, CustomAgent
+from agent import HumanUI, RandomBot, MinMaxBot, CustomBot
 from board import TheBoard
 from collections import Counter
 from tqdm import tqdm #install
 
 
-class Agent():
-    player = HumanAgent
-    minmax = MinMaxAgent
-    random = RandomAgent
-    custom = CustomAgent
+class Player():
+    human = HumanUI
+    minmax = MinMaxBot
+    random = RandomBot
+    custom = CustomBot
+
+    @classmethod
+    def set(cls, player, sign):
+        return getattr(cls, player)(sign=sign)
 
 
-def run_gameplay(board, x_agent, o_agent, show):
-    map_sign_to_agent = {'X': x_agent, 'O': o_agent}
+def run_gameplay(board, x_player, o_player, show):
+    map_sign_to_player = {'X': x_player, 'O': o_player}
     sign = 'X'
     sign_next = 'O'
     while board.check_open_moves():
-        pos = map_sign_to_agent.get(sign).make_move(board)
+        pos = map_sign_to_player.get(sign).make_move(board)
         board.process_move(sign, pos)
         if show:
             print(f'# Ruch "{sign}"')
@@ -28,30 +32,31 @@ def run_gameplay(board, x_agent, o_agent, show):
     return board.winner
 
 
-def main(x_agent, o_agent, show=True):
+def main(x_player, o_player, nap=1, show=True):
     board = TheBoard()
     board.print_intro() if show else None
-    winner = run_gameplay(board, x_agent, o_agent, show)
+    x_player.nap = nap
+    o_player.nap = nap
+    winner = run_gameplay(board, x_player, o_player, show)
     return winner
 
 
-def main_tournament(x_agent, o_agent, n=10, show=False):
+def main_tournament(x_player, o_player, n=10, nap=0, show=False):
     records = []
     for _ in tqdm(range(n), desc="Tournament"):
         records.append(
-            main(x_agent, o_agent, show))
+            main(x_player, o_player, nap, show))
     stats = Counter([r for r in records])
     x = stats.get('X', 0)
     o = stats.get('O', 0)
     d = n - x - o
     fmt = '\033[91m' #\033[1m
     msg = '{:>2} results:{} "X" {} agent -- {} : {} : {} -- "O" {} agent'
-    print(msg.format('', fmt, x_agent.id, x, d, o, o_agent.id))
+    print(msg.format('', fmt, x_player.id, x, d, o, o_player.id))
 
 
 if __name__ == '__main__':
-    nap = 1 #!
-    x_agent = Agent.minmax('X', nap)
-    o_agent = Agent.custom('O', nap)
-    # main(x_agent, o_agent)
-    main_tournament(x_agent, o_agent, n=100)
+    x_player = Player.set('custom', 'X')
+    o_player = Player.set('minmax', 'O')
+    # main(x_player, o_player)
+    main_tournament(x_player, o_player, n=10)

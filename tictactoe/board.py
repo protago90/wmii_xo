@@ -55,8 +55,7 @@ class TheBoard():
             self.winner = sign
     
     def undo_move(self):
-        pos = self.moves_registry.pop()
-        self.board[pos] = 0 
+        self.board[self.moves_registry.pop()] = 0 
         self.winner = None
 
     def get_valid_moves(self):
