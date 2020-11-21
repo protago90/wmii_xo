@@ -1,4 +1,4 @@
-from agent import HumanUI, RandomBot, MinMaxBot, CustomBot
+from agent import HumanUI, RandomBot, MinMaxBot, CustomBot, DebutsBot
 from board import TheBoard
 from collections import Counter
 from tqdm import tqdm #install
@@ -9,6 +9,7 @@ class Player():
     minmax = MinMaxBot
     random = RandomBot
     custom = CustomBot
+    debuts = DebutsBot
 
     @classmethod
     def set(cls, player, sign):
@@ -20,8 +21,8 @@ def run_gameplay(board, x_player, o_player, show):
     sign = 'X'
     sign_next = 'O'
     while board.check_open_moves():
-        pos = map_sign_to_player.get(sign).make_move(board)
-        board.process_move(sign, pos)
+        move = map_sign_to_player.get(sign).make_move(board)
+        board.process_move(sign, move)
         if show:
             print(f'# Ruch "{sign}"')
             board.print_state()
@@ -51,12 +52,12 @@ def main_tournament(x_player, o_player, n=10, nap=0, show=False):
     o = stats.get('O', 0)
     d = n - x - o
     fmt = '\033[91m' #\033[1m
-    msg = '{:>2} results:{} "X" {} agent -- {} : {} : {} -- "O" {} agent'
+    msg = '{:>2} results:{} "X" {} bot -- {} : {} : {} -- "O" {} bot'
     print(msg.format('', fmt, x_player.id, x, d, o, o_player.id))
 
 
 if __name__ == '__main__':
-    x_player = Player.set('custom', 'X')
-    o_player = Player.set('minmax', 'O')
-    # main(x_player, o_player)
-    main_tournament(x_player, o_player, n=10)
+    x_player = Player.set('minmax', 'X')
+    o_player = Player.set('custom', 'O')
+    main(x_player, o_player)
+    # main_tournament(x_player, o_player, n=10)

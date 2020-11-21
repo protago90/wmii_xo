@@ -58,8 +58,11 @@ class TheBoard():
         self.board[self.moves_registry.pop()] = 0 
         self.winner = None
 
-    def get_valid_moves(self):
+    def get_open_moves(self):
         return [i for i, v in enumerate(self.board) if v == 0]
     
     def check_open_moves(self):
-        return len(self.get_valid_moves()) >= 1
+        return len(self.get_open_moves()) >= 1
+    
+    def check_open_board(self):
+        return len(self.get_open_moves()) == 9

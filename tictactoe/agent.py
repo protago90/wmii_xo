@@ -1,5 +1,6 @@
 import random
 import time
+from functools import reduce
 
 
 class Agent():
@@ -19,76 +20,43 @@ class HumanUI(Agent):
         while True:
             try:
                 pos = int(input(f'# Wskaż pozycję 1-9: ')) - 1
-                if pos in board.get_valid_moves():
+                if pos in board.get_open_moves():
                     return pos
             except ValueError: pass
 
 
-class RandomBot(Agent):
-    def __init__(self, sign, nap=0):
+class AIBot(Agent):
+    def __init__(self, sign):
+        super().__init__(sign)
+        self.nap = 0
+    
+    def make_move(self, board):
+        time.sleep(self.nap)
+        if board.check_open_board():
+            return random.choice(board.get_open_moves())
+        return self.get_move(board)
+
+    def get_move(self, board):
+        pass
+
+
+class RandomBot(AIBot):
+    def __init__(self, sign):
         super().__init__(sign)
         self.id = 'Random'
-        self.nap = nap
     
-    def make_move(self, board):
-        time.sleep(self.nap)
-        return random.choice(board.get_valid_moves())
+    def get_move(self, board):
+        return random.choice(board.get_open_moves())
 
 
-class MinMaxBot(Agent):
-    def __init__(self, sign, nap=0):
+class DebutsBot(AIBot):
+    def __init__(self, sign):
         super().__init__(sign)
-        self.id = 'Minmax'
-        self.nap = nap
+        self.id = 'Debuts'
 
-    def make_move(self, board):
-        time.sleep(self.nap)
-        if len(board.get_valid_moves()) == 9:
-            pos = random.choice(board.get_valid_moves())
-        else:
-            pos = self.apply_minmax(board)
-        return pos
-    
-    def apply_minmax(self, board):
-        record = []
-        for pos in board.get_valid_moves():
-            board.process_move(self.sign, pos)
-            score = self.calc_minimax(False, self.sign, board) #oponent
-            board.undo_move()
-            record.append((pos, score))
-        the_pos = sorted(
-            record, key=lambda xy: (xy[1], random.random()), reverse=True
-        )[0][0]
-        return the_pos
-
-    def calc_minimax(self, maximizer, sign, board):
-        if board.winner:
-            return 1 if self.sign == sign else -1
-        if not board.check_open_moves():
-            return 0
-        sign = 'X' if sign == 'O' else 'O'
-        scores = []
-        for pos in board.get_valid_moves():
-            board.process_move(sign, pos)
-            scores.append(self.calc_minimax(not maximizer, sign, board))
-            board.undo_move()
-        return max(scores) if maximizer else min(scores)
-
-
-class CustomBot(Agent):
-    def __init__(self, sign, nap=0):
-        super().__init__(sign)
-        self.id = 'Custom'
-        self.nap = nap
-
-    def make_move(self, board):
-        time.sleep(self.nap)
+    def get_move(self, board):
         sign = 'X' if self.sign == 'O' else 'O'
-        pos = self.apply_rule(board, sign)
-        return pos
-
-    def apply_rule(self, board, sign):
-        moves = board.get_valid_moves()
+        moves = board.get_open_moves()
         if len(moves) == 9:
             return 8 #random.choice([0, 2, 6, 8])
         if len(moves) == 8:
@@ -105,3 +73,66 @@ class CustomBot(Agent):
                 return pos
             board.undo_move()
         return random.choice(moves)
+
+
+class SearchBot(AIBot):
+    def __init__(self, sign):
+        super().__init__(sign)
+
+    def get_move(self, board):
+        record = []
+        for pos in board.get_open_moves():
+            board.process_move(self.sign, pos)
+            score = self.eval_game_branch_with_rule(board, self.sign, 1)
+            board.undo_move()
+            record.append((pos, score))
+        the_pos = sorted(
+            record, key=lambda xy: (xy[1], random.random()), reverse=True
+        )[0][0]
+        print(record)
+        return the_pos
+    
+    def eval_game_branch_with_rule(self, board, sign, step):
+        pass
+
+
+class MinMaxBot(SearchBot):
+    def __init__(self, sign):
+        super().__init__(sign)
+        self.id = 'Minmax'
+
+    def eval_game_branch_with_rule(self, board, sign, step):
+        if board.winner:
+            return 1 if self.sign == sign else -1
+        if not board.check_open_moves():
+            return 0
+        sign = 'X' if sign == 'O' else 'O'
+        scores = []
+        for pos in board.get_open_moves():
+            board.process_move(sign, pos)
+            scores.append(
+                self.eval_game_branch_with_rule(board, sign, step))
+            board.undo_move()
+        return max(scores) if self.sign == sign else min(scores)
+
+
+class CustomBot(SearchBot):
+    def __init__(self, sign):
+        super().__init__(sign)
+        self.id = 'Custom'
+
+    def eval_game_branch_with_rule(self, board, sign, step):
+        if board.winner:
+            return 1*(1/step) if self.sign == sign else -1*(1/step)
+        if not board.check_open_moves():
+            return 0
+        sign = 'X' if sign == 'O' else 'O'
+        step += 1
+        scores = []
+        for pos in board.get_open_moves():
+            board.process_move(sign, pos)
+            scores.append(
+                self.eval_game_branch_with_rule(board, sign, step))
+            board.undo_move()
+        # print(f'{pos} - {step} - {scores}')
+        return 1 if max(scores) == 1 else min(scores)  # reduce(lambda x,y: x+y, scores)
