@@ -34,9 +34,9 @@ class AIBot(Agent):
         time.sleep(self.nap)
         if board.check_open_board():
             return random.choice(board.get_open_moves())
-        return self.get_move(board)
+        return self._get_move(board)
 
-    def get_move(self, board):
+    def _get_move(self, board):
         pass
 
 
@@ -45,7 +45,7 @@ class RandomBot(AIBot):
         super().__init__(sign)
         self.id = 'Random'
     
-    def get_move(self, board):
+    def _get_move(self, board):
         return random.choice(board.get_open_moves())
 
 
@@ -54,7 +54,7 @@ class DebutsBot(AIBot):
         super().__init__(sign)
         self.id = 'Debuts'
 
-    def get_move(self, board):
+    def _get_move(self, board):
         sign = 'X' if self.sign == 'O' else 'O'
         moves = board.get_open_moves()
         if len(moves) == 9:
@@ -79,20 +79,38 @@ class SearchBot(AIBot):
     def __init__(self, sign):
         super().__init__(sign)
 
-    def get_move(self, board):
-        record = []
+    def _get_move(self, board):
+        records = []
         for pos in board.get_open_moves():
             board.process_move(self.sign, pos)
-            score = self.eval_game_branch_with_rule(board, self.sign, 1)
+            score = self._eval_game_branch_with_rule(board, self.sign, 1)
             board.undo_move()
-            record.append((pos, score))
-        the_pos = sorted(
-            record, key=lambda xy: (xy[1], random.random()), reverse=True
-        )[0][0]
-        print(record)
+            records.append((pos, score))
+        the_pos = self._eval_top_heuristic(records)
+        # print(self.sign, '>', records)
         return the_pos
-    
-    def eval_game_branch_with_rule(self, board, sign, step):
+
+    def _eval_game_branch_with_rule(self, board, sign, step):
+        final = self._eval_final_state(board, sign, step)
+        if final is not None:
+            return final
+        sign = 'X' if sign == 'O' else 'O'
+        step += 1
+        scores = []
+        for pos in board.get_open_moves():
+            board.process_move(sign, pos)
+            scores.append(
+                self._eval_game_branch_with_rule(board, sign, step))
+            board.undo_move()
+        return self._eval_heuristic(sign, scores)
+
+    def _eval_final_state(self, board, sign, step):
+        pass
+
+    def _eval_heuristic(self, sign, scores):
+        pass
+
+    def _eval_top_heuristic(self, pos_score_pairs):
         pass
 
 
@@ -101,19 +119,20 @@ class MinMaxBot(SearchBot):
         super().__init__(sign)
         self.id = 'Minmax'
 
-    def eval_game_branch_with_rule(self, board, sign, step):
+    def _eval_final_state(self, board, sign, step):
         if board.winner:
             return 1 if self.sign == sign else -1
         if not board.check_open_moves():
             return 0
-        sign = 'X' if sign == 'O' else 'O'
-        scores = []
-        for pos in board.get_open_moves():
-            board.process_move(sign, pos)
-            scores.append(
-                self.eval_game_branch_with_rule(board, sign, step))
-            board.undo_move()
+        return None
+
+    def _eval_heuristic(self, sign, scores):
         return max(scores) if self.sign == sign else min(scores)
+
+    def _eval_top_heuristic(self, pos_score_pairs):
+        return sorted(
+            pos_score_pairs, key=lambda xy: (xy[1], random.random()), reverse=True
+        )[0][0]
 
 
 class CustomBot(SearchBot):
@@ -121,18 +140,23 @@ class CustomBot(SearchBot):
         super().__init__(sign)
         self.id = 'Custom'
 
-    def eval_game_branch_with_rule(self, board, sign, step):
+    def _eval_final_state(self, board, sign, step):
         if board.winner:
-            return 1*(1/step) if self.sign == sign else -1*(1/step)
+            return 1*(1/step**4) if self.sign == sign else -1*(1/step**4)
         if not board.check_open_moves():
             return 0
-        sign = 'X' if sign == 'O' else 'O'
-        step += 1
-        scores = []
-        for pos in board.get_open_moves():
-            board.process_move(sign, pos)
-            scores.append(
-                self.eval_game_branch_with_rule(board, sign, step))
-            board.undo_move()
-        # print(f'{pos} - {step} - {scores}')
-        return 1 if max(scores) == 1 else min(scores)  # reduce(lambda x,y: x+y, scores)
+        return None
+
+    def _eval_heuristic(self, sign, scores):
+        return sum(scores)
+
+    def _eval_top_heuristic(self, pos_score_pairs):
+        # win_pos = [p for p, s in pos_score_pairs if s >= 1]
+        # if win_pos:
+        #     return random.choice(win_pos)
+        # lose_pos = [p for p, s in pos_score_pairs if s == -1]
+        # if lose_pos:
+        #     return random.choice(lose_pos)
+        return sorted(
+            pos_score_pairs, key=lambda xy: (xy[1], random.random()), reverse=True
+        )[0][0]

@@ -58,6 +58,6 @@ def main_tournament(x_player, o_player, n=10, nap=0, show=False):
 
 if __name__ == '__main__':
     x_player = Player.set('minmax', 'X')
-    o_player = Player.set('custom', 'O')
-    main(x_player, o_player)
-    # main_tournament(x_player, o_player, n=10)
+    o_player = Player.set('minmax', 'O')
+    # main(x_player, o_player)
+    main_tournament(x_player, o_player, n=10)
