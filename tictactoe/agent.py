@@ -4,31 +4,35 @@ from functools import reduce
 
 
 class Agent():
-    def __init__(self, sign):
+    DEBUG = False
+    NAP = 0
+
+    def __init__(self, sign, nap=None, debug=None):
         self.sign = sign
+        self.nap = nap if nap else Agent.NAP
+        self.debug = debug if debug else Agent.DEBUG
     
     def make_move(self, board):
         pass
 
 
 class HumanUI(Agent):
-    def __init__(self, sign):
+    def __init__(self, sign, nap=None, debug=None):
         super().__init__(sign)
         self.id = 'Human'
 
     def make_move(self, board):
         while True:
             try:
-                pos = int(input(f'# Wskaż pozycję 1-9: ')) - 1
+                pos = int(input(f'# Pick position 1-9: ')) - 1
                 if pos in board.get_open_moves():
                     return pos
             except ValueError: pass
 
 
 class AIBot(Agent):
-    def __init__(self, sign):
-        super().__init__(sign)
-        self.nap = 0
+    def __init__(self, sign, nap=None, debug=None):
+        super().__init__(sign, nap, debug)
     
     def make_move(self, board):
         time.sleep(self.nap)
@@ -41,8 +45,8 @@ class AIBot(Agent):
 
 
 class RandomBot(AIBot):
-    def __init__(self, sign):
-        super().__init__(sign)
+    def __init__(self, sign, nap=None, debug=None):
+        super().__init__(sign, nap)
         self.id = 'Random'
     
     def _get_move(self, board):
@@ -50,8 +54,8 @@ class RandomBot(AIBot):
 
 
 class DebutsBot(AIBot):
-    def __init__(self, sign):
-        super().__init__(sign)
+    def __init__(self, sign, nap=None, debug=None):
+        super().__init__(sign, nap)
         self.id = 'Debuts'
 
     def _get_move(self, board):
@@ -76,8 +80,8 @@ class DebutsBot(AIBot):
 
 
 class SearchBot(AIBot):
-    def __init__(self, sign):
-        super().__init__(sign)
+    def __init__(self, sign, nap=None, debug=None):
+        super().__init__(sign, nap, debug)
 
     def _get_move(self, board):
         records = []
@@ -86,8 +90,10 @@ class SearchBot(AIBot):
             score = self._eval_game_branch_with_rule(board, self.sign, 1)
             board.undo_move()
             records.append((pos, score))
+        if self.debug:
+            records = [(p, round(s, 1)) for p, s in records]
+            print(f"# '{self.sign}' -> {records}")
         the_pos = self._eval_top_heuristic(records)
-        # print(self.sign, '>', records)
         return the_pos
 
     def _eval_game_branch_with_rule(self, board, sign, step):
@@ -115,8 +121,8 @@ class SearchBot(AIBot):
 
 
 class MinMaxBot(SearchBot):
-    def __init__(self, sign):
-        super().__init__(sign)
+    def __init__(self, sign, nap=None, debug=None):
+        super().__init__(sign, nap, debug)
         self.id = 'Minmax'
 
     def _eval_final_state(self, board, sign, step):
@@ -136,13 +142,14 @@ class MinMaxBot(SearchBot):
 
 
 class CustomBot(SearchBot):
-    def __init__(self, sign):
-        super().__init__(sign)
+    def __init__(self, sign, nap=None, debug=None):
+        super().__init__(sign, nap, debug)
         self.id = 'Custom'
 
     def _eval_final_state(self, board, sign, step):
+        d = (1/step**2) 
         if board.winner:
-            return 1*(1/step**4) if self.sign == sign else -1*(1/step**4)
+            return 1 * d if self.sign == sign else -1 * d
         if not board.check_open_moves():
             return 0
         return None
@@ -151,12 +158,6 @@ class CustomBot(SearchBot):
         return sum(scores)
 
     def _eval_top_heuristic(self, pos_score_pairs):
-        # win_pos = [p for p, s in pos_score_pairs if s >= 1]
-        # if win_pos:
-        #     return random.choice(win_pos)
-        # lose_pos = [p for p, s in pos_score_pairs if s == -1]
-        # if lose_pos:
-        #     return random.choice(lose_pos)
         return sorted(
             pos_score_pairs, key=lambda xy: (xy[1], random.random()), reverse=True
         )[0][0]

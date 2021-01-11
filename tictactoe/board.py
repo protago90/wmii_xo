@@ -16,7 +16,7 @@ class TheBoard():
         return vecs[::-1] if desc else vecs
 
     def print_intro(self):
-        print('# Witaj w Kółko vs Krzyżyk!')
+        print('# Welcame in TIC-TAC-TOE game.')
         for a, b, c in self._split_vector(range(1, 10), desc=True):
             print(self.msg.format(a, b, c))
 
