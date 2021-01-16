@@ -36,8 +36,13 @@ class AIBot(Agent):
     
     def make_move(self, board):
         time.sleep(self.nap)
-        if board.check_open_board():
-            return random.choice(board.get_open_moves())
+        ##if board.check_open_board():
+        ##    return random.choice(board.get_open_moves())
+        #moves = board.get_open_moves()
+        #if len(moves) == 9:
+        #    return random.choice([0, 8])
+        #if len(moves) == 8:
+        #    return 4 if 4 in moves else random.choice([2, 6])
         return self._get_move(board)
 
     def _get_move(self, board):
@@ -91,8 +96,7 @@ class SearchBot(AIBot):
             board.undo_move()
             records.append((pos, score))
         if self.debug:
-            records = [(p, round(s, 1)) for p, s in records]
-            print(f"# '{self.sign}' -> {records}")
+            print(f'# "{self.sign}" -> {[(p+1, round(s, 1)) for p, s in records]}')
         the_pos = self._eval_top_heuristic(records)
         return the_pos
 

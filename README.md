@@ -1,38 +1,26 @@
-## The Tictactoe case study for UŁ WMII's AI lecture
+### TicTacToe playrground
+-------
+**TicTacToe** is deterministic, zero-sum game with possible 19683 sates & 255168 possible gameplayes. This simple implementation is purposed for crash-testing agents ideas, mainly based on heurustic search. #Realized as UŁ WMiI project for AI course.
+
+##### #**QUICKTOUR**:
+
+For gameplay type `python tictactoe -x {player} -o {player}` where `player` denotes one of possible modes: `human`, `custom`, `minmax` , `debuts`, `random`. When `human` mode is applied 1-9 num-keys serve as interface (lookup `--help` for more info). To trigger tournament just specifie `-n` of duels, for example `python tictactoe -x minmax -o custom -n 100` reuslt wtih:
+
+<img src="./bar.png" >
 
 
-#### #PRESENTATION AGENDA:
- 1. &nbsp; about titactoe:&nbsp; *zero-sum game, 19683 states, 255168 gameplays (=solved)*
- 2. &nbsp; board state epresentation:&nbsp; *9 elem table with numeric keyboard api*
- 3. &nbsp; implemented bots:&nbsp; *minmax, random, human and custom<sup>TM</sup>*
- 4. &nbsp; (?) code & baseline algorithms inspection&nbsp;
- 5. &nbsp; presenting own rule-based bot idea
- 6. &nbsp; gaming session:&nbsp; *single & tournament modes*
-
-
-#### #N=1000 SUMULATIONS:
+##### #**TOURNAMENTS**: 
   <pre>
   time       X-player      win  draw  loss    O-player
-# -----------------------------------------------------
-  (--:59) &#8594;  Minmax bot --   0 : 100 :   0 -- Minmax bot
-  (--:-0) &#8594;  Random bot --  63 :  14 :  23 -- Random bot
-  (--:-0) &#8594;  Debuts bot --  10 :  87 :   3 -- Debuts bot
-  (--:58) &#8594;  Custom bot --  38 :  51 :  11 -- Custom bot
-# -----------------------------------------------------
-  (-1:02) &#8594;  Custom bot --   0 :  82 :  18 -- Minmax bot
-  (--:59) &#8594;  Minmax bot --  77 :  23 :   0 -- Custom bot
-  (--:09) &#8594;  Custom bot --  88 :  10 :   2 -- Random bot
-  (--:52) &#8594;  Random bot --   7 :  18 :  75 -- Minmax bot
-  (--:08) &#8594;  Custom bot --  17 :  77 :   6 -- Debuts bot
-  (--:52) &#8594;  Debuts bot --  25 :  46 :  29 -- Custom bot</pre>
+  (-5:22) &#8594;  Minmax bot --   0 : 100 :   0 -- Custom bot
+  (-5:01) &#8594;  Minmax bot --  47 :  53 :   0 -- Custom bot
+  (-4:29) &#8594;  Minmax bot --  95 :   5 :   0 -- Random bot
+  (-4:32) &#8594;  Minmax bot --  23 :  77 :   0 -- Debuts bot
+  (-5:25) &#8594;  Custom bot --   0 : 100 :  00 -- Minmax bot
+  (-1:02) &#8594;  Random bot --   0 :  28 :  72 -- Minmax bot
+  (-1:02) &#8594;  Debuts bot --   0 :  99 :   1 -- Minmax bot</pre>
 
-
-#### #TICTACTOE TREE DEPTH:
-<img src="./xkcd_xo.png" alt="XKCD" width="550">
+##### #**SEARCHSPACE**:
+<img src="./xkcd_xo.png" alt="XKCD" width="500">
 
 [*source XKCD*](https://xkcd.com/832/)
-
-
-#### #RESOURCES:
-  - https://levelup.gitconnected.com/mastering-tic-tac-toe-with-minimax-algorithm-3394d65fa88f
-  - https://www.hackerearth.com/blog/developers/minimax-algorithm-alpha-beta-pruning/

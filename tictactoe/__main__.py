@@ -26,14 +26,14 @@ class Player():
 def parse_args():
     args = argparse.ArgumentParser()
     bots = Player.list()
-    args.add_argument('-x', '--x_player', type=str, default='human',
-                      required=False, help='"X" player.', choices=bots)
-    args.add_argument('-o', '--o_player', type=str, default='custom',
-                      required=False, help='"O" player.', choices=bots)
-    args.add_argument('-n', '--n_games', type=int, default=0, 
-                      required=False, help='N games in tournament.')
-    args.add_argument('-d', '--debug', action='store_true', 
-                      required=False, help='Debug search bot rationele.')   
+    args.add_argument('-x', '--x_player', type=str, default='custom', required=False,
+                      help=f'"X" player: {bots}.', metavar='', choices=bots)
+    args.add_argument('-o', '--o_player', type=str, default='custom', required=False,
+                      help=f'"O" player: {bots}.', metavar='', choices=bots)
+    args.add_argument('-n', '--n_games', type=int, default=0, required=False,
+                      help='N games in tournament.', metavar='')
+    args.add_argument('-d', '--debug', action='store_true', required=False, 
+                      help='Show search bot rationale.')   
     return args.parse_args()
 
 
@@ -77,17 +77,17 @@ def main_tournament(x_player, o_player, n=10, show=False):
 
 def main():
     args = parse_args()
-    x_player = args.x_player
-    o_player = args.o_player
+    x_mode = args.x_player
+    o_mode = args.o_player
     n = abs(args.n_games)
     if n == 0:
         debug = args.debug
-        x_player = Player.set(x_player, 'X', debug, nap=1.5)
-        o_player = Player.set(o_player, 'O', debug, nap=1.5)
+        x_player = Player.set(x_mode, 'X', debug, nap=1.5)
+        o_player = Player.set(o_mode, 'O', debug, nap=1.5)
         main_game(x_player, o_player)
     else:
-        x_player = Player.set(x_player, 'X')
-        o_player = Player.set(o_player, 'O')
+        x_player = Player.set(x_mode, 'X')
+        o_player = Player.set(o_mode, 'O')
         main_tournament(x_player, o_player, n=n)
 
 
