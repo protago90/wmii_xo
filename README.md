@@ -12,7 +12,7 @@ For gameplay type `python tictactoe -x {player} -o {player}` where `player` deno
 ##### #**TOURNAMENTS**: 
   <pre>
   time       X-player      win  draw  loss    O-player
-  (-5:22) &#8594;  Minmax bot --   0 : 100 :   0 -- Custom bot
+  (-5:22) &#8594;  Minmax bot --   0 : 100 :   0 -- Minmax bot
   (-5:01) &#8594;  Minmax bot --   5 :  95 :   0 -- Custom bot
   (-4:29) &#8594;  Minmax bot --  95 :   5 :   0 -- Random bot
   (-4:32) &#8594;  Minmax bot --  23 :  77 :   0 -- Debuts bot
