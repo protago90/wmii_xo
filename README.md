@@ -1,6 +1,6 @@
 ### TicTacToe playrground
 -------
-**TicTacToe** is deterministic, zero-sum game with possible 19683 sates & 255168 possible gameplayes. This simple implementation is purposed for crash-testing agents ideas, mainly based on heurustic search. #Realized as UŁ WMiI project for AI course.
+**TicTacToe** is deterministic game with possible 19683 sates. This simple implementation is purposed for crash-testing algorithmic agents ideas, mainly based on heurustic search. *#Realized as UŁ WMiI project for AI course.*
 
 ##### #**QUICKTOUR**:
 
@@ -20,7 +20,7 @@ For gameplay type `python tictactoe -x {player} -o {player}` where `player` deno
   (-1:02) &#8594;  Random bot --   0 :  28 :  72 -- Minmax bot
   (-1:02) &#8594;  Debuts bot --   0 :  99 :   1 -- Minmax bot</pre>
 
-##### #**SEARCHSPACE**:
-<img src="./xkcd_xo.png" alt="XKCD" width="500">
+##### #**GAMEPLAYS**:
+<img src="./xkcd_xo.png" alt="XKCD" width="400">
 
 [*source XKCD*](https://xkcd.com/832/)
