@@ -151,7 +151,7 @@ class CustomBot(SearchBot):
         self.id = 'Custom'
 
     def _eval_final_state(self, board, sign, step):
-        d = (1/step**2) 
+        d = (1/step**4) 
         if board.winner:
             return 1 * d if self.sign == sign else -1 * d
         if not board.check_open_moves():
